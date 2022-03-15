@@ -1,8 +1,10 @@
 import React from "react";
 import {
   AppBar,
+  Avatar,
   Toolbar,
   Box,
+  Button,
   IconButton,
   Typography,
   Menu,
@@ -12,11 +14,13 @@ import { MoreVert as MoreIcon } from "@mui/icons-material";
 import { useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { routes } from "lib/constants";
+import { useVerida } from "lib/hooks";
 
 export const TopBar: React.FunctionComponent = () => {
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
+  const { isConnected, profile, disconnect } = useVerida();
   const i18n = useIntl();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -29,6 +33,15 @@ export const TopBar: React.FunctionComponent = () => {
 
   const handleMenuItemClick = (to: string) => {
     history.push(to);
+    closeMenu();
+  };
+
+  const handleLoginClick = () => {
+    history.push(routes.login);
+  };
+
+  const handleLogoutClick = async () => {
+    await disconnect(); // TODO handle error
     closeMenu();
   };
 
@@ -50,6 +63,38 @@ export const TopBar: React.FunctionComponent = () => {
     defaultMessage: "Settings",
   });
 
+  const loginButtonLabel = i18n.formatMessage({
+    id: "ApplicationBar.loginButtonLabel",
+    description: "Label of the Login button in the top bar",
+    defaultMessage: "Login",
+  });
+
+  const logoutMenuItemLabel = i18n.formatMessage({
+    id: "ApplicationBar.logoutMenuItemLabel",
+    description: "Label of the menu item for the Logout function",
+    defaultMessage: "Logout",
+  });
+
+  const menu = (
+    <Menu
+      id="appbar.menu-more"
+      open={menuOpen}
+      anchorEl={anchorEl}
+      onClose={closeMenu}
+      keepMounted
+    >
+      <MenuItem onClick={() => handleMenuItemClick(routes.marketSelection)}>
+        {marketSelectionMenuItemLabel}
+      </MenuItem>
+      <MenuItem onClick={() => handleMenuItemClick(routes.settings)}>
+        {settingsMenuItemLabel}
+      </MenuItem>
+      {isConnected && (
+        <MenuItem onClick={handleLogoutClick}>{logoutMenuItemLabel}</MenuItem>
+      )}
+    </Menu>
+  );
+
   return (
     <AppBar
       position="fixed"
@@ -70,31 +115,38 @@ export const TopBar: React.FunctionComponent = () => {
           {appTitle}
         </Typography>
         <Box>
-          <IconButton
-            aria-label="more"
-            aria-controls="appbar.menu-more"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            size="large"
-          >
-            <MoreIcon />
-          </IconButton>
-          <Menu
-            id="appbar.menu-more"
-            open={menuOpen}
-            anchorEl={anchorEl}
-            onClose={closeMenu}
-            keepMounted
-          >
-            <MenuItem
-              onClick={() => handleMenuItemClick(routes.marketSelection)}
+          {!isConnected && (
+            <>
+              <Button color="inherit" onClick={handleLoginClick}>
+                {loginButtonLabel}
+              </Button>
+              <IconButton
+                aria-label="more"
+                aria-controls="appbar.menu-more"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                size="large"
+              >
+                <MoreIcon />
+              </IconButton>
+            </>
+          )}
+          {isConnected && (
+            <IconButton
+              aria-label="more"
+              aria-controls="appbar.menu-more"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              sx={{ p: 0 }}
             >
-              {marketSelectionMenuItemLabel}
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuItemClick(routes.settings)}>
-              {settingsMenuItemLabel}
-            </MenuItem>
-          </Menu>
+              <Avatar
+                sx={{ width: { xs: 32, md: 40 }, height: { xs: 32, md: 40 } }}
+                alt={profile?.name}
+                src={profile?.avatar}
+              />
+            </IconButton>
+          )}
+          {menu}
         </Box>
       </Toolbar>
     </AppBar>

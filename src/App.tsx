@@ -14,6 +14,7 @@ import { sendTelemetryPageView } from "lib/utils";
 import { ErrorHandler } from "lib/handlers";
 import { TopBar } from "components/organisms";
 import {
+  LoginView,
   MarketSelectionDialog,
   SettingsDialog,
   TimelinesView,
@@ -62,6 +63,9 @@ export const App: React.FunctionComponent = () => {
               exact
             >
               <TimelinesView />
+            </Route>
+            <Route path={routes.login} exact>
+              <LoginView />
             </Route>
             <Route>
               <Redirect to={routes.home} />

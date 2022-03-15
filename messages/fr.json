@@ -131,6 +131,14 @@
     "defaultMessage": "Paramètres",
     "description": "Label of the menu item for the Settings view"
   },
+  "ApplicationBar.loginButtonLabel": {
+    "defaultMessage": "Connexion",
+    "description": "Label of the Login button in the top bar"
+  },
+  "ApplicationBar.logoutMenuItemLabel": {
+    "defaultMessage": "Déconnexion",
+    "description": "Label of the menu item for the Logout function"
+  },
   "App.modalDialog.closeButtonLabel": {
     "defaultMessage": "Fermer",
     "description": "Label of the the 'Close' button in the main dialog"
