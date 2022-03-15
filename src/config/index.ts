@@ -1,3 +1,4 @@
+import { EnvironmentType } from "@verida/client-ts";
 import { name, version } from "../../package.json";
 import { defaultUserSettings, settings } from "./settings";
 
@@ -22,6 +23,16 @@ const enableCrashReporting = !!(
 
 const logtailSourceToken = process.env.REACT_APP_LOGTAIL_SOURCE_TOKEN;
 
+const veridaEnv: EnvironmentType =
+  process.env.REACT_APP_VERIDA_ENV === "local"
+    ? EnvironmentType.LOCAL
+    : process.env.REACT_APP_VERIDA_ENV === "mainnet"
+    ? EnvironmentType.MAINNET
+    : EnvironmentType.TESTNET;
+
+const veridaContextName = process.env.REACT_APP_VERIDA_APP_CONTEXT_NAME;
+const veridaLogoUrl = process.env.REACT_APP_VERIDA_APP_LOGO_URL;
+
 const timelineVisiblePeriod = 24;
 const timelineTotalPeriod = 7 * 24;
 
@@ -41,4 +52,7 @@ export const config = {
   enableMonitoring,
   enableCrashReporting,
   logtailSourceToken,
+  veridaEnv,
+  veridaContextName,
+  veridaLogoUrl,
 };
