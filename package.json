@@ -51,6 +51,8 @@
     "@mui/icons-material": "^5.2.4",
     "@mui/material": "^5.2.4",
     "@mui/styles": "^5.2.3",
+    "@verida/account-web-vault": "^1.1.10",
+    "@verida/client-ts": "^1.1.13",
     "apollo": "^2.33.9",
     "graphql": "^15.8.0",
     "lodash.debounce": "^4.0.8",
