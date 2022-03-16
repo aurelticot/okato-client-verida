@@ -127,6 +127,10 @@
     "defaultMessage": "Connect with",
     "description": "Label of the the 'Connect with Verida' button"
   },
+  "ApplicationBar.profileMenuItemLabel": {
+    "defaultMessage": "Profile",
+    "description": "Label of the menu item for the Profile view"
+  },
   "ApplicationBar.marketSelectionMenuItemLabel": {
     "defaultMessage": "Market selection",
     "description": "Label of the menu item for the Market Selection view"

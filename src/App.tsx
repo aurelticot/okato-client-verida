@@ -14,8 +14,8 @@ import { sendTelemetryPageView } from "lib/utils";
 import { ErrorHandler } from "lib/handlers";
 import { TopBar } from "components/organisms";
 import {
-  LoginView,
   MarketSelectionDialog,
+  ProfileDialog,
   SettingsDialog,
   TimelinesView,
 } from "components/views";
@@ -26,6 +26,7 @@ export const App: React.FunctionComponent = () => {
   const history = useHistory();
   const location = useLocation();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const profileRouteMatch = useRouteMatch(routes.profile);
   const settingsRouteMatch = useRouteMatch(routes.settings);
   const marketSelectionRouteMatch = useRouteMatch(routes.marketSelection);
 
@@ -40,9 +41,11 @@ export const App: React.FunctionComponent = () => {
 
   useEffect(() => {
     setDialogOpen(
-      !!settingsRouteMatch?.isExact || !!marketSelectionRouteMatch?.isExact
+      !!profileRouteMatch?.isExact ||
+        !!settingsRouteMatch?.isExact ||
+        !!marketSelectionRouteMatch?.isExact
     );
-  }, [settingsRouteMatch, marketSelectionRouteMatch]);
+  }, [profileRouteMatch, settingsRouteMatch, marketSelectionRouteMatch]);
 
   return (
     <Box
@@ -59,13 +62,15 @@ export const App: React.FunctionComponent = () => {
         <ErrorHandler>
           <Switch>
             <Route
-              path={[routes.home, routes.settings, routes.marketSelection]}
+              path={[
+                routes.home,
+                routes.profile,
+                routes.settings,
+                routes.marketSelection,
+              ]}
               exact
             >
               <TimelinesView />
-            </Route>
-            <Route path={routes.login} exact>
-              <LoginView />
             </Route>
             <Route>
               <Redirect to={routes.home} />
@@ -73,6 +78,10 @@ export const App: React.FunctionComponent = () => {
           </Switch>
         </ErrorHandler>
       </Box>
+      <ProfileDialog
+        open={dialogOpen && !!profileRouteMatch?.isExact}
+        onClose={closeDialog}
+      />
       <MarketSelectionDialog
         open={dialogOpen && !!marketSelectionRouteMatch?.isExact}
         onClose={closeDialog}

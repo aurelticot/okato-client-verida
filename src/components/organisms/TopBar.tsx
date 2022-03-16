@@ -36,10 +36,6 @@ export const TopBar: React.FunctionComponent = () => {
     closeMenu();
   };
 
-  const handleConnectClick = () => {
-    history.push(routes.login);
-  };
-
   const handleDisconnectClick = async () => {
     await disconnect(); // TODO handle error
     closeMenu();
@@ -49,6 +45,12 @@ export const TopBar: React.FunctionComponent = () => {
     id: "ApplicationBar.appTitle",
     description: "Name/Title of the application",
     defaultMessage: "Market Timeline",
+  });
+
+  const profileMenuItemLabel = i18n.formatMessage({
+    id: "ApplicationBar.profileMenuItemLabel",
+    description: "Label of the menu item for the Profile view",
+    defaultMessage: "Profile",
   });
 
   const marketSelectionMenuItemLabel = i18n.formatMessage({
@@ -83,6 +85,11 @@ export const TopBar: React.FunctionComponent = () => {
       onClose={closeMenu}
       keepMounted
     >
+      {isConnected && (
+        <MenuItem onClick={() => handleMenuItemClick(routes.profile)}>
+          {profileMenuItemLabel}
+        </MenuItem>
+      )}
       <MenuItem onClick={() => handleMenuItemClick(routes.marketSelection)}>
         {marketSelectionMenuItemLabel}
       </MenuItem>
@@ -119,7 +126,10 @@ export const TopBar: React.FunctionComponent = () => {
         <Box>
           {!isConnected && (
             <>
-              <Button color="inherit" onClick={handleConnectClick}>
+              <Button
+                color="inherit"
+                onClick={() => handleMenuItemClick(routes.profile)}
+              >
                 {connectButtonLabel}
               </Button>
               <IconButton
