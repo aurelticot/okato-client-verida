@@ -123,6 +123,10 @@
     "defaultMessage": "Rafraîchir",
     "description": "Label of the 'Refresh' button in the notification"
   },
+  "ConnectVeridaButton.ConnectWithVeridaButtonLabel": {
+    "defaultMessage": "Se connecter avec",
+    "description": "Label of the the 'Connect with Verida' button"
+  },
   "ApplicationBar.marketSelectionMenuItemLabel": {
     "defaultMessage": "Sélection de marchés",
     "description": "Label of the menu item for the Market Selection view"
