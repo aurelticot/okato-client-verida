@@ -14,7 +14,8 @@ export const ProfileDialog: React.FunctionComponent<Props> = ({
   open = false,
   onClose,
 }) => {
-  const { connect, disconnect, profile, isConnected } = useVerida();
+  const { connect, disconnect, profile, isConnected, isConnecting } =
+    useVerida();
   const i18n = useIntl();
   const theme = useTheme();
 
@@ -119,7 +120,7 @@ export const ProfileDialog: React.FunctionComponent<Props> = ({
             </Button>
           </>
         ) : (
-          <ConnectVeridaButton onClick={handleConnect} />
+          <ConnectVeridaButton onClick={handleConnect} loading={isConnecting} />
         )}
         <Typography sx={{ alignSelf: "stretch" }}>{privacyMessage}</Typography>
       </Box>

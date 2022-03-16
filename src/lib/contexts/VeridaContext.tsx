@@ -31,11 +31,10 @@ export const VeridaContext = React.createContext<VeridaContextType>({
 
 export const VeridaProvider: React.FunctionComponent = (props) => {
   const [isConnecting, setIsConnecting] = React.useState<boolean>(false);
+  const [isConnected, setIsConnected] = React.useState<boolean>(false);
   const [account, setAccount] = React.useState<VaultAccount | null>(null);
   const [context, setContext] = React.useState<Context | null>(null);
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
-
-  const isConnected = !!account && !!context;
 
   const connect = useCallback(async () => {
     if (!config.veridaContextName) {
@@ -59,8 +58,8 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
       },
     });
 
-    setIsConnecting(false);
     if (!tempContext) {
+      setIsConnecting(false);
       // TODO Handle connection failed/cancelled
       return;
     }
@@ -88,6 +87,8 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
         avatar: profileData?.avatar?.uri,
       });
     }
+    setIsConnecting(false);
+    setIsConnected(true);
   }, []);
 
   const disconnect = useCallback(async () => {
@@ -95,6 +96,8 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
       // TODO handle error
       await account.disconnect(config.veridaContextName);
     }
+    setIsConnected(false);
+    setIsConnecting(false);
     setAccount(null);
     setContext(null);
     setProfile(null);

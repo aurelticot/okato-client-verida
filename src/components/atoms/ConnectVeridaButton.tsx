@@ -1,9 +1,10 @@
 import React from "react";
-import { Button, ButtonProps, styled } from "@mui/material";
+import { LoadingButton, LoadingButtonProps } from "@mui/lab";
+import { styled } from "@mui/material";
 import { useIntl } from "react-intl";
 import { ReactComponent as VeridaLogo } from "./verida_logo.svg";
 
-const WhiteButton = styled(Button)<ButtonProps>(({ theme }) => ({
+const WhiteButton = styled(LoadingButton)<LoadingButtonProps>(({ theme }) => ({
   "color": theme.palette.getContrastText(theme.palette.common.white),
   "backgroundColor": theme.palette.common.white,
   "&:hover": {
@@ -11,9 +12,9 @@ const WhiteButton = styled(Button)<ButtonProps>(({ theme }) => ({
   },
 }));
 
-export const ConnectVeridaButton: React.FunctionComponent<ButtonProps> = (
-  props
-) => {
+export const ConnectVeridaButton: React.FunctionComponent<
+  LoadingButtonProps
+> = (props) => {
   const i18n = useIntl();
 
   const ConnectWithVeridaButtonLabel = i18n.formatMessage({
@@ -25,6 +26,7 @@ export const ConnectVeridaButton: React.FunctionComponent<ButtonProps> = (
   return (
     <WhiteButton
       {...props}
+      loadingPosition="end"
       variant="contained"
       endIcon={<VeridaLogo height={34} width={100} />}
     >
