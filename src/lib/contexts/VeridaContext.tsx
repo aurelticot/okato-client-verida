@@ -1,13 +1,9 @@
 import React, { useCallback } from "react";
-import { Network, Context } from "@verida/client-ts";
+import { Context } from "@verida/client-ts";
 import { VaultAccount } from "@verida/account-web-vault";
 import { config } from "config";
-
-type UserProfile = {
-  id: string;
-  name?: string;
-  avatar?: string;
-};
+import { UserProfile } from "lib/types";
+import { Verida } from "lib/utils";
 
 type VeridaContextType = {
   connect: () => Promise<void>;
@@ -43,58 +39,30 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
     }
 
     setIsConnecting(true);
-    const tempAccount = new VaultAccount({
-      logoUrl: config.veridaLogoUrl,
-    });
-
-    // TODO handle error
-    const tempContext = await Network.connect({
-      client: {
-        environment: config.veridaEnv,
-      },
-      account: tempAccount,
-      context: {
-        name: config.veridaContextName,
-      },
-    });
-
-    if (!tempContext) {
+    try {
+      const [vContext, vAccount, vProfile] = await Verida.connect(
+        config.veridaContextName,
+        config.veridaEnv,
+        config.veridaLogoUrl
+      );
+      setContext(vContext);
+      setAccount(vAccount);
+      setProfile(vProfile);
+      setIsConnected(true);
+    } catch {
+      setIsConnected(false);
+      setAccount(null);
+      setContext(null);
+      setProfile(null);
+    } finally {
       setIsConnecting(false);
-      // TODO Handle connection failed/cancelled
-      return;
     }
-
-    setContext(tempContext);
-    setAccount(tempAccount);
-
-    // TODO handle error
-    const did = await tempAccount.did();
-    const client = tempContext.getClient();
-    // TODO handle error
-    const profileInstance = await client.openPublicProfile(
-      did,
-      "Verida: Vault"
-    );
-    if (profileInstance) {
-      // TODO handle error
-      const profileData = (await profileInstance.getMany({}, {})) as {
-        name?: string;
-        avatar?: { uri: string };
-      };
-      setProfile({
-        id: did,
-        name: profileData?.name,
-        avatar: profileData?.avatar?.uri,
-      });
-    }
-    setIsConnecting(false);
-    setIsConnected(true);
   }, []);
 
   const disconnect = useCallback(async () => {
     if (account) {
       // TODO handle error
-      await account.disconnect(config.veridaContextName);
+      await Verida.disconnect(account, config.veridaContextName);
     }
     setIsConnected(false);
     setIsConnecting(false);

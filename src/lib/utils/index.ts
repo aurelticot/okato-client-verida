@@ -4,3 +4,4 @@ export * from "./networkUtils";
 export * from "./timelineUtils";
 export * from "./textUtils";
 export * from "./raygun";
+export * from "./veridaUtils";
