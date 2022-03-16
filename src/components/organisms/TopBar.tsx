@@ -36,11 +36,11 @@ export const TopBar: React.FunctionComponent = () => {
     closeMenu();
   };
 
-  const handleLoginClick = () => {
+  const handleConnectClick = () => {
     history.push(routes.login);
   };
 
-  const handleLogoutClick = async () => {
+  const handleDisconnectClick = async () => {
     await disconnect(); // TODO handle error
     closeMenu();
   };
@@ -63,16 +63,16 @@ export const TopBar: React.FunctionComponent = () => {
     defaultMessage: "Settings",
   });
 
-  const loginButtonLabel = i18n.formatMessage({
-    id: "ApplicationBar.loginButtonLabel",
-    description: "Label of the Login button in the top bar",
-    defaultMessage: "Login",
+  const connectButtonLabel = i18n.formatMessage({
+    id: "ApplicationBar.connectButtonLabel",
+    description: "Label of the Connect button in the top bar",
+    defaultMessage: "Connect",
   });
 
-  const logoutMenuItemLabel = i18n.formatMessage({
-    id: "ApplicationBar.logoutMenuItemLabel",
-    description: "Label of the menu item for the Logout function",
-    defaultMessage: "Logout",
+  const disconnectMenuItemLabel = i18n.formatMessage({
+    id: "ApplicationBar.disconnectMenuItemLabel",
+    description: "Label of the menu item for the Disconnect function",
+    defaultMessage: "Disconnect",
   });
 
   const menu = (
@@ -90,7 +90,9 @@ export const TopBar: React.FunctionComponent = () => {
         {settingsMenuItemLabel}
       </MenuItem>
       {isConnected && (
-        <MenuItem onClick={handleLogoutClick}>{logoutMenuItemLabel}</MenuItem>
+        <MenuItem onClick={handleDisconnectClick}>
+          {disconnectMenuItemLabel}
+        </MenuItem>
       )}
     </Menu>
   );
@@ -117,8 +119,8 @@ export const TopBar: React.FunctionComponent = () => {
         <Box>
           {!isConnected && (
             <>
-              <Button color="inherit" onClick={handleLoginClick}>
-                {loginButtonLabel}
+              <Button color="inherit" onClick={handleConnectClick}>
+                {connectButtonLabel}
               </Button>
               <IconButton
                 aria-label="more"
