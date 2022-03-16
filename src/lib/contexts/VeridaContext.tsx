@@ -4,6 +4,7 @@ import { VaultAccount } from "@verida/account-web-vault";
 import { config } from "config";
 
 type UserProfile = {
+  id: string;
   name?: string;
   avatar?: string;
 };
@@ -15,7 +16,6 @@ type VeridaContextType = {
   isConnected: boolean;
   account: VaultAccount | null;
   context: Context | null;
-  did: string | null;
   profile: UserProfile | null;
 };
 
@@ -26,7 +26,6 @@ export const VeridaContext = React.createContext<VeridaContextType>({
   isConnected: false,
   account: null,
   context: null,
-  did: null,
   profile: null,
 });
 
@@ -34,7 +33,6 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
   const [isConnecting, setIsConnecting] = React.useState<boolean>(false);
   const [account, setAccount] = React.useState<VaultAccount | null>(null);
   const [context, setContext] = React.useState<Context | null>(null);
-  const [did, setDID] = React.useState<string | null>(null);
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
 
   const isConnected = !!account && !!context;
@@ -69,14 +67,13 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
 
     setContext(tempContext);
     setAccount(tempAccount);
-    // TODO handle error
-    const tempDID = await tempAccount.did();
-    setDID(tempDID);
 
+    // TODO handle error
+    const did = await tempAccount.did();
     const client = tempContext.getClient();
     // TODO handle error
     const profileInstance = await client.openPublicProfile(
-      tempDID,
+      did,
       "Verida: Vault"
     );
     if (profileInstance) {
@@ -86,6 +83,7 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
         avatar?: { uri: string };
       };
       setProfile({
+        id: did,
         name: profileData?.name,
         avatar: profileData?.avatar?.uri,
       });
@@ -99,7 +97,7 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
     }
     setAccount(null);
     setContext(null);
-    setDID(null);
+    setProfile(null);
   }, [account]);
 
   const contextValue: VeridaContextType = {
@@ -109,7 +107,6 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
     isConnected,
     account,
     context,
-    did,
     profile,
   };
 
