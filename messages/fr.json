@@ -143,6 +143,31 @@
     "defaultMessage": "Déconnexion",
     "description": "Label of the menu item for the Disconnect function"
   },
+
+  "ProfileDialog.modalTitle": {
+    "defaultMessage": "Profil",
+    "description": "Title of the Profile dialog"
+  },
+  "ProfileDialog.closeButtonLabel": {
+    "defaultMessage": "Fermer",
+    "description": "Label of the the 'Close' button in the dialog"
+  },
+  "ProfileDialog.salutation": {
+    "defaultMessage": "Bonjour {name}",
+    "description": "User salutation with his name"
+  },
+  "ProfileDialog.connectedMessage": {
+    "defaultMessage": "Vous êtes connecté avec votre compte <bold>Verida</bold>",
+    "description": "Message saying the user is connected"
+  },
+  "ProfileDialog.disconnectButtonLabel": {
+    "defaultMessage": "Déconnexion",
+    "description": "Label of the the 'Disconnect' button"
+  },
+  "ProfileDialog.privacyMessage": {
+    "defaultMessage": "Nous respectons votre vie privée et vos informations personnelles. Nous nous sommes associés à <bold>Verida</bold> pour vous offrir la meilleur expérience. <bold>Verida</bold> est un protocole permettant aux utilisateurs de contrôler leur identité et leurs données. Allez voir {websiteLink}.",
+    "description": "Privacy message in the profile and login dialog"
+  },
   "App.modalDialog.closeButtonLabel": {
     "defaultMessage": "Fermer",
     "description": "Label of the the 'Close' button in the main dialog"
