@@ -2,6 +2,7 @@ export * from "./LanguageSettingItem";
 export * from "./MarketSelectionList";
 export * from "./MarketSelectionListSkeleton";
 export * from "./MarketSortSettingItem";
+export * from "./Profile";
 export * from "./SettingSelectionDialog";
 export * from "./SettingsList";
 export * from "./ThemeSettingItem";

@@ -155,21 +155,29 @@
     "defaultMessage": "Close",
     "description": "Label of the the 'Close' button in the dialog"
   },
-  "ProfileDialog.salutation": {
+  "Profile.salutation": {
     "defaultMessage": "Hi {name}",
     "description": "User salutation with his name"
   },
-  "ProfileDialog.connectedMessage": {
+  "Profile.connectedMessage": {
     "defaultMessage": "You are connected with your <bold>Verida</bold> account",
     "description": "Message saying the user is connected"
   },
-  "ProfileDialog.disconnectButtonLabel": {
+  "Profile.disconnectButtonLabel": {
     "defaultMessage": "Disconnect",
     "description": "Label of the the 'Disconnect' button"
   },
-  "ProfileDialog.privacyMessage": {
-    "defaultMessage": "We respect your privacy and your personal information. We have partnered with <bold>Verida</bold> to provide you with the best experience. <bold>Verida</bold> is a protocol allowing users to control their identity and their data. Check {websiteLink}.",
+  "Profile.privacyMessage": {
+    "defaultMessage": "We respect your privacy and your personal information. To provide you with the best experience, we partnered with <bold>Verida</bold>, a protocol allowing users to control their identity and their data. Check {websiteLink}.",
     "description": "Privacy message in the profile and login dialog"
+  },
+  "Profile.notConnectedEnvMessage": {
+    "defaultMessage": "You will be using the {env} environment",
+    "description": "Message stating the environment the user will be connected to"
+  },
+  "Profile.connectedEnvMessage": {
+    "defaultMessage": "You are using the {env} environment",
+    "description": "Message stating the environment the user is connected to"
   },
   "App.modalDialog.closeButtonLabel": {
     "defaultMessage": "Close",
