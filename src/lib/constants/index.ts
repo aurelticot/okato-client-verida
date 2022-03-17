@@ -8,3 +8,7 @@ export const textDefault = {
   maxREMSize: 2.5,
 };
 export const everyMinuteSchedule = "0 * * * * *";
+
+export const schemaURLs = {
+  settings: `${window.location.origin}/schemas/settings/v0.1.0/schema.json`,
+};

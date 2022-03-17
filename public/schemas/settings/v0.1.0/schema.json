@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markettimelines.app/schemas/settings/v0.1.0/schema.json",
+  "name": "https://markettimelines.app/schemas/settings/v0.1.0/schema.json",
+  "title": "Settings",
+  "titlePlural": "Market Timelines Settings",
+  "description": "Settings for the Market Timelines app",
+  "type": "object",
+  "database": {
+    "name": "settings",
+    "indexes": {
+      "insertedAt": ["insertedAt"]
+    }
+  },
+  "layouts": {
+    "create": [
+      "theme",
+      "language",
+      "timeFormat",
+      "marketSort",
+      "marketSelection"
+    ],
+    "view": ["theme", "language", "timeFormat", "marketSort", "marketSelection"]
+  },
+  "allOf": [
+    { "$ref": "https://core.schemas.verida.io/base/v0.1.0/schema.json" },
+    {
+      "properties": {
+        "theme": {
+          "title": "Theme",
+          "type": "string",
+          "enum": ["system", "black", "dark", "light", "white"]
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "timeFormat": {
+          "title": "Time Format",
+          "type": "string",
+          "enum": ["system", "12-hour", "24-hour"]
+        },
+        "marketSort": {
+          "title": "Market Sorting",
+          "type": "string",
+          "enum": [
+            "ALPHABETICALLY",
+            "ALPHABETICALLY_REVERSE",
+            "CAPITALISATION",
+            "CAPITALISATION_REVERSE",
+            "CHRONOLOGICALLY",
+            "CHRONOLOGICALLY_REVERSE"
+          ]
+        },
+        "marketSelection": {
+          "title": "Market Selection",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "theme",
+        "language",
+        "timeFormat",
+        "marketSort",
+        "marketSelection"
+      ]
+    }
+  ]
+}
