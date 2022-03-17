@@ -14,6 +14,7 @@ import { useIntl } from "react-intl";
 import { Markets_markets_result as Market } from "lib/graphql/queries/Markets/types/Markets";
 import { MarketSelectionSearch } from "components/molecules";
 import { MarketSelectionListSkeleton } from "components/organisms";
+import { useVerida } from "lib/hooks";
 
 const filterMarket = (query = "", market: Market) => {
   const queryLower = query.toLowerCase();
@@ -42,6 +43,7 @@ export const MarketSelectionList: React.FunctionComponent<Props> = ({
 }) => {
   const i18n = useIntl();
   const [query, setQuery] = useState("");
+  const { isConnected } = useVerida();
 
   if (!markets) {
     return (
@@ -186,9 +188,21 @@ export const MarketSelectionList: React.FunctionComponent<Props> = ({
     );
   };
 
+  const synchronisedInVerida = i18n.formatMessage({
+    id: "MarketSelectionList.synchronisedInVerida",
+    defaultMessage: "Your selection is synchronised in your Verida account.",
+    description:
+      "Message stating the selection is synchronised in the users' Verida account",
+  });
+
   return (
     <>
       <MarketSelectionSearch onSearch={setQuery} />
+      {isConnected && (
+        <Box sx={{ px: 2, py: 1 }}>
+          <Typography variant="body2">{synchronisedInVerida}</Typography>
+        </Box>
+      )}
       {getSelectedMarkets()}
       {getAvailableMarkets()}
     </>

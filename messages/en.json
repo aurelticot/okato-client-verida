@@ -251,6 +251,10 @@
     "defaultMessage": "No other market available",
     "description": "Message appearing in market selection when the list of available is empty"
   },
+  "MarketSelectionList.synchronisedInVerida": {
+    "defaultMessage": "Your selection is synchronised in your Verida account.",
+    "description": "Message stating the selection is synchronised in the users' Verida account"
+  },
   "MarketSelectionSearch.placeholder": {
     "defaultMessage": "Search...",
     "description": "Placeholder of the search input in the market selection dialog"
@@ -258,5 +262,9 @@
   "MarketSelectionSearch.clearButtonTooltip": {
     "defaultMessage": "Clear search",
     "description": "Tooltip of the search clear button"
+  },
+  "SettingsList.synchronisedInVerida": {
+    "defaultMessage": "Your settings are synchronised in your Verida account.",
+    "description": "Message stating the settings are synchronised in the users' Verida account"
   }
 }

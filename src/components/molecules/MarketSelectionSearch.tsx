@@ -10,7 +10,7 @@ const Search = styled("div")(({ theme }) => ({
   "&:hover": {
     backgroundColor: alpha(theme.palette.text.primary, 0.15),
   },
-  "margin": theme.spacing(1),
+  "margin": theme.spacing(2),
 }));
 
 const InputIconWrapper = styled("div")(({ theme }) => ({
