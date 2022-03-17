@@ -1,4 +1,5 @@
 import { Network, EnvironmentType, Context } from "@verida/client-ts";
+import Datastore from "@verida/client-ts/dist/context/datastore";
 import { VaultAccount } from "@verida/account-web-vault";
 import { UserProfile } from "lib/types";
 
@@ -58,8 +59,16 @@ const getPublicProfileInfo = async (
   return profile;
 };
 
+const openDatastore = async (
+  context: Context,
+  schemaURL: string
+): Promise<Datastore> => {
+  return await context.openDatastore(schemaURL);
+};
+
 export const Verida = {
   connect,
   disconnect,
   getPublicProfileInfo,
+  openDatastore,
 };

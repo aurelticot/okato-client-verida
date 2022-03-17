@@ -1,9 +1,12 @@
 import React, { useCallback } from "react";
 import { Context } from "@verida/client-ts";
+import Datastore from "@verida/client-ts/dist/context/datastore";
 import { VaultAccount } from "@verida/account-web-vault";
 import { config } from "config";
 import { UserProfile } from "lib/types";
-import { Verida } from "lib/utils";
+import { Verida, getLogger } from "lib/utils";
+import { schemaURLs } from "lib/constants";
+const logger = getLogger("Verida");
 
 type VeridaContextType = {
   connect: () => Promise<void>;
@@ -13,6 +16,7 @@ type VeridaContextType = {
   account: VaultAccount | null;
   context: Context | null;
   profile: UserProfile | null;
+  datastore: Datastore | null;
 };
 
 export const VeridaContext = React.createContext<VeridaContextType>({
@@ -23,6 +27,7 @@ export const VeridaContext = React.createContext<VeridaContextType>({
   account: null,
   context: null,
   profile: null,
+  datastore: null,
 });
 
 export const VeridaProvider: React.FunctionComponent = (props) => {
@@ -31,6 +36,7 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
   const [account, setAccount] = React.useState<VaultAccount | null>(null);
   const [context, setContext] = React.useState<Context | null>(null);
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
+  const [datastore, setDatastore] = React.useState<Datastore | null>(null);
 
   const connect = useCallback(async () => {
     if (!config.veridaContextName) {
@@ -48,12 +54,19 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
       setContext(vContext);
       setAccount(vAccount);
       setProfile(vProfile);
+      const settingsDatastore = await Verida.openDatastore(
+        vContext,
+        schemaURLs.settings
+      );
+      setDatastore(settingsDatastore);
       setIsConnected(true);
-    } catch {
+    } catch (error) {
+      logger.error(error);
       setIsConnected(false);
       setAccount(null);
       setContext(null);
       setProfile(null);
+      setDatastore(null);
     } finally {
       setIsConnecting(false);
     }
@@ -69,6 +82,7 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
     setAccount(null);
     setContext(null);
     setProfile(null);
+    setDatastore(null);
   }, [account]);
 
   const contextValue: VeridaContextType = {
@@ -79,6 +93,7 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
     account,
     context,
     profile,
+    datastore,
   };
 
   return (
