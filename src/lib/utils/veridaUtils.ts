@@ -1,7 +1,12 @@
 import { Network, EnvironmentType, Context } from "@verida/client-ts";
 import Datastore from "@verida/client-ts/dist/context/datastore";
 import { VaultAccount } from "@verida/account-web-vault";
-import { UserProfile } from "lib/types";
+import {
+  UserProfile,
+  UserSettings,
+  SettingsRecord,
+  RecordMeta,
+} from "lib/types";
 
 const connect = async (
   contextName: string,
@@ -66,9 +71,48 @@ const openDatastore = async (
   return await context.openDatastore(schemaURL);
 };
 
+const getSettingsRecord = async (
+  datastore: Datastore
+): Promise<SettingsRecord | null> => {
+  try {
+    const settingsRecords = await datastore.getMany();
+    if (settingsRecords && settingsRecords.length !== 0) {
+      return settingsRecords[0] as SettingsRecord;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+const saveSettings = async (
+  datastore: Datastore,
+  userSettings: UserSettings,
+  settingsRecord: SettingsRecord | null
+): Promise<boolean> => {
+  // TODO factorise logs here?
+  try {
+    const record = settingsRecord || {};
+    // Get the metadata from the record and the settings properties from the argument
+    const recordToSave: Partial<RecordMeta> & UserSettings = {
+      ...record,
+      language: userSettings.language,
+      theme: userSettings.theme,
+      marketSelection: userSettings.marketSelection,
+      marketSort: userSettings.marketSort,
+      timeFormat: userSettings.timeFormat,
+    };
+    return !!(await datastore.save(recordToSave));
+  } catch {
+    return false;
+  }
+};
+
 export const Verida = {
   connect,
   disconnect,
   getPublicProfileInfo,
   openDatastore,
+  getSettingsRecord,
+  saveSettings,
 };

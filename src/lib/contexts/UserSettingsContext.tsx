@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { config } from "config";
-import { UserSettings, SettingsRecord } from "lib/types";
-import { recordTelemetryBreadcrumb, getLogger } from "lib/utils";
+import { UserSettings } from "lib/types";
+import { recordTelemetryBreadcrumb, getLogger, Verida } from "lib/utils";
 import { useVerida } from "lib/hooks";
 const logger = getLogger("UserSettings");
 
@@ -54,47 +54,33 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
       datastoreInitialised.current = false;
       return;
     }
+
     const initialisationHandler = async () => {
       logger.debug(`User Settings datastore initialisation handler`);
       // First time using the datastore, if empty, initialise it with the
       // current settings, otherwise override the current settings with the
       // settings from the datastore
 
-      const settingsRecords = await datastore.getMany();
-      if (!settingsRecords || settingsRecords.length === 0) {
+      datastoreInitialised.current = true;
+
+      const settingsRecord = await Verida.getSettingsRecord(datastore);
+      if (!settingsRecord) {
         logger.debug(
           `No Settings record found, initialising with current settings in browser`
         );
-        // TODO handle errors
-        // TODO find a better way to cast the property types
-        const recordToSave: Omit<SettingsRecord, "_id" | "_rev"> = {
-          language: userSettings.language as string,
-          theme: userSettings.theme as
-            | "system"
-            | "black"
-            | "dark"
-            | "light"
-            | "white",
-          marketSelection: userSettings.marketSelection as string[],
-          marketSort: userSettings.marketSort as
-            | "ALPHABETICALLY"
-            | "ALPHABETICALLY_REVERSE"
-            | "CAPITALISATION"
-            | "CAPITALISATION_REVERSE"
-            | "CHRONOLOGICALLY"
-            | "CHRONOLOGICALLY_REVERSE",
-          timeFormat: userSettings.timeFormat as
-            | "system"
-            | "12-hour"
-            | "24-hour",
-        };
-        const success = await datastore.save({ recordToSave });
+
+        const success = await Verida.saveSettings(
+          datastore,
+          userSettings,
+          null
+        );
         if (success) {
           logger.debug(
             `Datastore initialised with current settings`,
             userSettings
           );
         } else {
+          datastoreInitialised.current = false;
           logger.error(`Datastore initialisation failed`, {
             settings: userSettings,
             errors: datastore.errors,
@@ -102,84 +88,82 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
           return;
         }
       } else {
-        const record = settingsRecords[0] as SettingsRecord;
+        logger.debug(
+          `Settings record found, replace browser settings with datastore settings`
+        );
         // TODO find a better way to convert Settings state and Settings record
         setUserSettings({
-          language: record.language,
-          theme: record.theme,
-          marketSelection: record.marketSelection,
-          marketSort: record.marketSort,
-          timeFormat: record.timeFormat,
+          language: settingsRecord.language,
+          theme: settingsRecord.theme,
+          marketSelection: settingsRecord.marketSelection,
+          marketSort: settingsRecord.marketSort,
+          timeFormat: settingsRecord.timeFormat,
         });
       }
 
-      datastoreInitialised.current = true;
-    };
-
-    const updateHandler = async () => {
-      logger.debug(`User Settings datastore update handler`);
-      // Updating the datastore with the update on current settings
-
-      const settingsRecords = await datastore.getMany();
-      const record = settingsRecords[0] as SettingsRecord;
-
-      // Get the _id and _rev from the record and the settings properties from the state
-      // TODO find a better way to cast the property types
-      const recordToSave: SettingsRecord = {
-        ...record,
-        language: userSettings.language as string,
-        theme: userSettings.theme as
-          | "system"
-          | "black"
-          | "dark"
-          | "light"
-          | "white",
-        marketSelection: userSettings.marketSelection as string[],
-        marketSort: userSettings.marketSort as
-          | "ALPHABETICALLY"
-          | "ALPHABETICALLY_REVERSE"
-          | "CAPITALISATION"
-          | "CAPITALISATION_REVERSE"
-          | "CHRONOLOGICALLY"
-          | "CHRONOLOGICALLY_REVERSE",
-        timeFormat: userSettings.timeFormat as "system" | "12-hour" | "24-hour",
-      };
-      const success = await datastore.save(recordToSave);
-      if (success) {
-        logger.debug(`User Settings saved in datastore`, userSettings);
-      } else {
-        logger.error(`Settings save in datastore failed`, {
-          settings: userSettings,
-          errors: datastore.errors,
-        });
-      }
+      // TODO handle cancel at unmount and disconnection
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await datastore.changes(async (row: any) => {
+        logger.debug("received datastore changes", row);
+        const updatedRecord = await Verida.getSettingsRecord(datastore);
+        if (updatedRecord) {
+          setUserSettings({
+            language: updatedRecord.language,
+            theme: updatedRecord.theme,
+            marketSelection: updatedRecord.marketSelection,
+            marketSort: updatedRecord.marketSort,
+            timeFormat: updatedRecord.timeFormat,
+          });
+        }
+      });
     };
 
     if (datastoreInitialised.current === false) {
       void initialisationHandler();
-    } else {
-      void updateHandler();
     }
   }, [userSettings, datastore]);
 
   useEffect(() => {
-    if (localStorage && !datastore && datastoreInitialised.current === false) {
-      localStorage.setItem(
-        userSettingsLocalStorageKey,
-        JSON.stringify(userSettings)
-      );
-      logger.info(`User Settings saved in local storage`, userSettings);
+    if (!localStorage) {
+      return;
     }
-  }, [userSettings, datastore]);
+    localStorage.setItem(
+      userSettingsLocalStorageKey,
+      JSON.stringify(userSettings)
+    );
+    logger.info(`User Settings saved in local storage`, userSettings);
+  }, [userSettings]);
 
   const contextValue = useMemo(() => {
-    const setter = (key: string, value: string | string[]) => {
-      setUserSettings({ ...userSettings, [key]: value });
-      recordTelemetryBreadcrumb("info", "Changed User Setting", "", {
+    const setter = async (key: string, value: string | string[]) => {
+      const newSettings = { ...userSettings, [key]: value };
+
+      logger.info("User Settings changed", {
         setting: key,
         newValue: value,
       });
-      logger.info("User Settings changed", {
+
+      setUserSettings(newSettings);
+
+      if (datastore) {
+        // Updating the datastore with the update on current settings
+        const settingsRecord = await Verida.getSettingsRecord(datastore);
+        const success = await Verida.saveSettings(
+          datastore,
+          newSettings,
+          settingsRecord
+        );
+        if (success) {
+          logger.debug(`User Settings saved in datastore`, newSettings);
+        } else {
+          logger.error(`Settings save in datastore failed`, {
+            settings: newSettings,
+            errors: datastore.errors,
+          });
+        }
+      }
+
+      recordTelemetryBreadcrumb("info", "Changed User Setting", "", {
         setting: key,
         newValue: value,
       });
@@ -188,7 +172,7 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
       userSettings,
       setUserSetting: setter,
     };
-  }, [userSettings]);
+  }, [userSettings, datastore]);
 
   return (
     <UserSettingsContext.Provider value={contextValue}>
