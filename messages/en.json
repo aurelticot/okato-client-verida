@@ -123,9 +123,13 @@
     "defaultMessage": "Refresh",
     "description": "Label of the 'Refresh' button in the notification"
   },
-  "ConnectVeridaButton.ConnectWithVeridaButtonLabel": {
+  "ConnectVeridaButton.buttonLabel": {
     "defaultMessage": "Connect with",
     "description": "Label of the the 'Connect with Verida' button"
+  },
+  "ConnectVeridaButton.progressIndicatorMessage": {
+    "defaultMessage": "Connecting...",
+    "description": "Message displayed in the button when connecting"
   },
   "ApplicationBar.profileMenuItemLabel": {
     "defaultMessage": "Profile",

@@ -1,38 +1,47 @@
 import React from "react";
-import { LoadingButton, LoadingButtonProps } from "@mui/lab";
-import { styled } from "@mui/material";
+import { Button, ButtonProps, styled } from "@mui/material";
 import { useIntl } from "react-intl";
 import { ReactComponent as VeridaLogo } from "./verida_logo.svg";
 
-const WhiteLoadingButton = styled(LoadingButton)<LoadingButtonProps>(
-  ({ theme }) => ({
-    "color": theme.palette.getContrastText(theme.palette.common.white),
-    "backgroundColor": theme.palette.common.white,
-    "&:hover": {
-      backgroundColor: theme.palette.grey[200],
-    },
-  })
-);
+const WhiteButton = styled(Button)<ButtonProps>(({ theme }) => ({
+  "color": theme.palette.getContrastText(theme.palette.common.white),
+  "backgroundColor": theme.palette.common.white,
+  "&:hover": {
+    backgroundColor: theme.palette.grey[200],
+  },
+}));
 
-export const ConnectVeridaButton: React.FunctionComponent<
-  LoadingButtonProps
-> = (props) => {
+interface Props {
+  onClick: () => void;
+  isConnecting: boolean;
+}
+
+export const ConnectVeridaButton: React.FunctionComponent<Props> = ({
+  onClick,
+  isConnecting,
+}) => {
   const i18n = useIntl();
 
-  const ConnectWithVeridaButtonLabel = i18n.formatMessage({
-    id: "ConnectVeridaButton.ConnectWithVeridaButtonLabel",
+  const buttonLabel = i18n.formatMessage({
+    id: "ConnectVeridaButton.buttonLabel",
     description: "Label of the the 'Connect with Verida' button",
     defaultMessage: "Connect with",
   });
 
+  const progressIndicatorMessage = i18n.formatMessage({
+    id: "ConnectVeridaButton.progressIndicatorMessage",
+    description: "Message displayed in the button when connecting",
+    defaultMessage: "Connecting...",
+  });
+
   return (
-    <WhiteLoadingButton
-      {...props}
-      loadingPosition="end"
+    <WhiteButton
+      onClick={onClick}
+      disabled={isConnecting}
       variant="contained"
       endIcon={<VeridaLogo height={34} width={100} />}
     >
-      {ConnectWithVeridaButtonLabel}
-    </WhiteLoadingButton>
+      {isConnecting ? progressIndicatorMessage : buttonLabel}
+    </WhiteButton>
   );
 };

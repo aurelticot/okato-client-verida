@@ -132,7 +132,10 @@ export const Profile: React.FunctionComponent = () => {
       ) : (
         <>
           {veridaEnvironmentAlert}
-          <ConnectVeridaButton onClick={handleConnect} loading={isConnecting} />
+          <ConnectVeridaButton
+            onClick={handleConnect}
+            isConnecting={isConnecting}
+          />
         </>
       )}
       <Typography sx={{ alignSelf: "stretch" }}>{privacyMessage}</Typography>
