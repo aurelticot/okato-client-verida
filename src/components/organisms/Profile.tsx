@@ -120,10 +120,10 @@ export const Profile: React.FunctionComponent = () => {
       </Typography>
       {isConnected ? (
         <>
-          <Typography sx={{ alignSelf: "stretch" }}>
-            {connectedMessage}
+          <Box sx={{ alignSelf: "stretch" }}>
+            <Typography>{connectedMessage}</Typography>
             <Typography variant="body2">{profile?.id}</Typography>
-          </Typography>
+          </Box>
           {veridaEnvironmentAlert}
           <Button variant="contained" onClick={handleDisconnect}>
             {disconnectButtonLabel}

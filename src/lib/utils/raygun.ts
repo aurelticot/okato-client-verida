@@ -14,7 +14,7 @@ interface TelemetryOptions {
 }
 
 export const initTelemetry = ({
-  raygunAPIKey = "local_dev",
+  raygunAPIKey,
   enableCrashReporting = false,
   enableMonitoring = false,
   appVersion,
@@ -23,6 +23,9 @@ export const initTelemetry = ({
   customData,
   tags,
 }: TelemetryOptions): void => {
+  if (!raygunAPIKey) {
+    return;
+  }
   window.rg4js("apiKey", raygunAPIKey);
   window.rg4js("enableCrashReporting", enableCrashReporting);
   window.rg4js("enablePulse", enableMonitoring);
