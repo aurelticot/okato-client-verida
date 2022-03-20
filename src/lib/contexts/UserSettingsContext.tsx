@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { config } from "config";
-import { UserSettings } from "lib/types";
+import { UserSettings, VeridaDatastoreListener } from "lib/types";
 import { recordTelemetryBreadcrumb, getLogger, Verida } from "lib/utils";
 import { useVerida } from "lib/hooks";
 const logger = getLogger("UserSettings");
@@ -45,9 +45,11 @@ export const UserSettingsContext = React.createContext({
 
 export const UserSettingsProvider: React.FunctionComponent = (props) => {
   const datastoreInitialised = useRef(false);
-  const { datastore } = useVerida();
+  const { datastore, isConnected } = useVerida();
   const [userSettings, setUserSettings] =
     useState<UserSettings>(initialUserSettings);
+  const [datastoreListener, setDatastoreListener] =
+    useState<VeridaDatastoreListener | null>(null);
 
   useEffect(() => {
     if (!datastore) {
@@ -55,8 +57,12 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
       return;
     }
 
+    // Excute this useEffect only if the settings context has not been initialised with the datastore
+    if (datastoreInitialised.current === true) {
+      return;
+    }
+
     const initialisationHandler = async () => {
-      logger.debug(`User Settings datastore initialisation handler`);
       // First time using the datastore, if empty, initialise it with the
       // current settings, otherwise override the current settings with the
       // settings from the datastore
@@ -65,9 +71,7 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
 
       const settingsRecord = await Verida.getSettingsRecord(datastore);
       if (!settingsRecord) {
-        logger.debug(
-          `No Settings record found, initialising with current settings in browser`
-        );
+        //No Settings record found, initialising with current settings in browser
 
         const success = await Verida.saveSettings(
           datastore,
@@ -88,10 +92,8 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
           return;
         }
       } else {
-        logger.debug(
-          `Settings record found, replace browser settings with datastore settings`
-        );
-        // TODO find a better way to convert Settings state and Settings record
+        //Settings record found, replace browser settings with datastore settings
+
         setUserSettings({
           language: settingsRecord.language,
           theme: settingsRecord.theme,
@@ -100,11 +102,25 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
           timeFormat: settingsRecord.timeFormat,
         });
       }
+    };
 
-      // TODO handle cancel at unmount and disconnection
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await datastore.changes(async (row: any) => {
-        logger.debug("received datastore changes", row);
+    void initialisationHandler();
+  }, [userSettings, datastore]);
+
+  useEffect(() => {
+    // Put the datastore change listener in its own useEffect to isolate and try to fix the bug
+
+    logger.debug("[ChangeListenerUseEffect] starting");
+    if (!datastore) {
+      logger.debug("[ChangeListenerUseEffect] no datastore, exit");
+      return;
+    }
+
+    const handler = async () => {
+      logger.debug("[ChangeListenerUseEffect] starting handler");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-explicit-any
+      const listener = await datastore.changes(async (changes: any) => {
+        logger.debug("received datastore changes", changes);
         const updatedRecord = await Verida.getSettingsRecord(datastore);
         if (updatedRecord) {
           setUserSettings({
@@ -116,12 +132,39 @@ export const UserSettingsProvider: React.FunctionComponent = (props) => {
           });
         }
       });
+
+      // For some reasons, the listener callback is registered with 'await
+      // datastore.changes(...);' but the execution stops there and never
+      // reach the next line!!
+
+      logger.debug("[ChangeListenerUseEffect] getting the listener", listener);
+
+      setDatastoreListener(() => {
+        logger.debug(
+          "[ChangeListenerUseEffect] setting the listener in the state"
+        );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return listener;
+      });
     };
 
-    if (datastoreInitialised.current === false) {
-      void initialisationHandler();
+    void handler();
+  }, [datastore]);
+
+  useEffect(() => {
+    // Cancel the datastore listener when disconnecting
+    if (!isConnected && datastoreListener) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      datastoreListener.cancel();
     }
-  }, [userSettings, datastore]);
+    return () => {
+      // Cancel the datastore listener when unmounting
+      if (datastoreListener) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        datastoreListener.cancel();
+      }
+    };
+  }, [isConnected, datastoreListener]);
 
   useEffect(() => {
     if (!localStorage) {
