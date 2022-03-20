@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://markettimelines.app/schemas/settings/v0.1.0/schema.json",
-  "name": "https://markettimelines.app/schemas/settings/v0.1.0/schema.json",
+  "$id": "https://beta-verida.markettimelines.com/schemas/settings/v0.1.0/schema.json",
+  "name": "https://beta-verida.markettimelines.com/schemas/settings/v0.1.0/schema.json",
   "title": "Settings",
   "titlePlural": "Market Timelines Settings",
   "description": "Settings for the Market Timelines app",
