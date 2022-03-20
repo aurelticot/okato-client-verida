@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { Button } from "@mui/material";
 import { SettingKey, MarketSortingMethod } from "lib/types";
@@ -38,6 +38,10 @@ export const MarketSelectionDialog: React.FunctionComponent<Props> = ({
       withTimeline: false,
     },
   });
+
+  useEffect(() => {
+    setSelection(marketSelection);
+  }, [marketSelection]);
 
   const markets = data ? data.markets.result : null;
 

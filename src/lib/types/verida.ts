@@ -12,3 +12,7 @@ export interface RecordMeta {
 }
 
 export type SettingsRecord = RecordMeta & UserSettings;
+
+export type VeridaDatastoreListener = {
+  cancel: () => void;
+};
