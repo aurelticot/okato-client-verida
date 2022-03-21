@@ -1,10 +1,12 @@
-# okato-client
+# okato-client-verida
 
-Okato is the project behind a 'Stock Market Sessions' app providing users a timeline view of the different Stock Exchanges' trading sessions.
+Okato is the personal project behind a 'Stock Market Sessions' app providing users a timeline view of the different Stock Exchanges' trading sessions.
 
-You can check a functional deployment at [beta.markettimeline.app](https://beta.markettimeline.app).
+You can check a functional deployment at [beta-verida.markettimelines.com](https://beta-verida.markettimelines.com).
 
 This repository is the frontend part of the application. You can check the umbrella repository [okato](https://github.com/aurelticot/okato).
+
+This particular repository is a proof-of-concept for the integration with the [Verida](https://verida.io) Network to handle user authentication and data storage.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
