@@ -1,7 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Context } from "@verida/client-ts";
 import Datastore from "@verida/client-ts/dist/context/datastore";
-import { VaultAccount } from "@verida/account-web-vault";
+import { VaultAccount, hasSession } from "@verida/account-web-vault";
 import { config } from "config";
 import { UserProfile } from "lib/types";
 import { Verida, getLogger } from "lib/utils";
@@ -84,6 +84,12 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
     setProfile(null);
     setDatastore(null);
   }, [account]);
+
+  useEffect(() => {
+    if (config.veridaContextName && hasSession(config.veridaContextName)) {
+      void connect();
+    }
+  }, [connect]);
 
   const contextValue: VeridaContextType = {
     connect,
