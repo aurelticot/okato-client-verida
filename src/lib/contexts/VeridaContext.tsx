@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Context } from "@verida/client-ts";
-import Datastore from "@verida/client-ts/dist/context/datastore";
+import { Context, Datastore } from "@verida/client-ts";
 import { VaultAccount, hasSession } from "@verida/account-web-vault";
 import { config } from "config";
 import { UserProfile } from "lib/types";
@@ -49,7 +48,8 @@ export const VeridaProvider: React.FunctionComponent = (props) => {
       const [vContext, vAccount, vProfile] = await Verida.connect(
         config.veridaContextName,
         config.veridaEnv,
-        config.veridaLogoUrl
+        config.veridaLogoUrl,
+        window.location.href
       );
       setContext(vContext);
       setAccount(vAccount);

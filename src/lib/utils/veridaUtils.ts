@@ -1,5 +1,9 @@
-import { Network, EnvironmentType, Context } from "@verida/client-ts";
-import Datastore from "@verida/client-ts/dist/context/datastore";
+import {
+  Network,
+  EnvironmentType,
+  Context,
+  Datastore,
+} from "@verida/client-ts";
 import { VaultAccount } from "@verida/account-web-vault";
 import {
   UserProfile,
@@ -11,9 +15,15 @@ import {
 const connect = async (
   contextName: string,
   environment: EnvironmentType,
-  logoUrl?: string
+  logoUrl?: string,
+  openUrl?: string
 ): Promise<[context: Context, account: VaultAccount, profile: UserProfile]> => {
-  const account = new VaultAccount({ logoUrl });
+  const account = new VaultAccount({
+    request: {
+      logoUrl,
+      openUrl,
+    },
+  });
 
   const context = await Network.connect({
     client: {
